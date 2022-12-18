@@ -1,9 +1,25 @@
 GET http://localhost:5000/users
 
+###
 POST http://localhost:5000/users
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "email": "
+  "firstname": "Mounir",
+  "lastname": "Mekoui",
+  "email" : "mounir.mekoui@gmail.com",
+  "password" : "place51",
 }
+
+###
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+  "email" : "mounir.mekoui@gmail.com",
+  "password" : "place51"
+}
+
+###
+GET http://localhost:5000/decisions
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJtb3VuaXIubWVrb3VpQGdtYWlsLmNvbSIsImlhdCI6MTY3MTM3MDY2OCwiZXhwIjoxNjcxMzc0MjY4fQ.2WmZYips3fybjFiwCBN5HYvrd_v_SVy39zFM9lTm2TE
