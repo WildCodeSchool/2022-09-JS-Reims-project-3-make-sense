@@ -16,7 +16,19 @@ function Register() {
     password: false,
     passwordConfirm: false,
   });
+  const comparePasswords = () => {
+    if (
+      passwordRef.current.value === passwordConfirmRef.current.value &&
+      passwordRef.current.value !== ""
+    ) {
+      return true;
+    }
+    return false;
+  };
   const handleSubmit = () => {
+    if (!comparePasswords()) {
+      return;
+    }
     const userInformations = {
       firstname: firstnameRef.current.value,
       lastname: lastnameRef.current.value,
