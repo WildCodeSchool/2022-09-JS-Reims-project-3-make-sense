@@ -4,7 +4,12 @@ import DashboardCard from "../components/DecisionCard";
 function Dashboard() {
   const [decisions, setDecisions] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:5000/decisions?status=current")
+    fetch("http://localhost:5000/decisions?status=current", {
+      method: "GET",
+      headers: {
+        Autorization: `Bearer ${document.cookie.split("=")[1]}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => setDecisions(data));
   }, []);

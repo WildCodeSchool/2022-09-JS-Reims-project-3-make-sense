@@ -1,10 +1,12 @@
 import React, { useRef } from "react";
 import axios from "axios";
 import cookie from "js-cookie";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import loginImage from "../assets/login_image.jpg";
+import { AuthContext } from "../_services/AuthContext";
 
 function Login() {
+  const { login } = React.useContext(AuthContext);
   const navigate = useNavigate();
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -19,6 +21,7 @@ function Login() {
       })
       .then((res) => {
         cookie.set("token", res.data.token);
+        login();
         navigate("/");
       })
       .catch((err) => {
@@ -77,12 +80,12 @@ function Login() {
             </form>
             <div className="flex flex-col gap-2">
               <p className="text-sm text-center">Vous n'avez pas de compte ?</p>
-              <NavLink
-                to="/register"
+              <button
+                type="button"
                 className="text-sm text-center text-[#9B084F] font-bold"
               >
                 Créer un compte
-              </NavLink>
+              </button>
             </div>
           </article>
         </section>

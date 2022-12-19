@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import CreateDecision from "./pages/CreateDecision";
 import Decision from "./pages/Decision";
@@ -7,40 +6,36 @@ import "./App.css";
 import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import { AuthProvider } from "./_services/AuthContext";
 
 function App() {
-  const [dataId, setDataId] = useState();
-  const [createDecision, setCreateDecision] = useState({
-    impacted: [],
-    experts: [],
-    title: "",
-    date: "",
-    description: "",
-    impacts: "",
-    advantages: "",
-    risks: "",
-  });
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop().split(";").shift();
+    }
+    return null;
+  };
+  const token = getCookie("token");
   return (
-    <div className="App">
-      <Header />
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/decisions/create"
-          element={
-            <CreateDecision
-              createDecision={createDecision}
-              setCreateDecision={setCreateDecision}
-              dataId={dataId}
-              setDataId={setDataId}
-            />
-          }
-        />
-        <Route path="/decision/:id" element={<Decision />} />
-        <Route path="/" element={<Dashboard />} />
-      </Routes>
-    </div>
+    <AuthProvider>
+      <div className="App">
+        {token ? <Header /> : null}
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          {token ? (
+            <Route path="/" element={<Dashboard />}>
+              <Route path="decisions/create" element={<CreateDecision />} />
+              <Route path="decisions/:id" element={<Decision />} />
+            </Route>
+          ) : (
+            <Route path="/" element={<Login />} />
+          )}
+        </Routes>
+      </div>
+    </AuthProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function InputDecisionForm({
@@ -9,8 +9,6 @@ function InputDecisionForm({
   setStep,
   stepName,
   redirectButton,
-  setDataId,
-  dataId,
 }) {
   const navigate = useNavigate();
   const postDecision = async () => {
@@ -26,7 +24,6 @@ function InputDecisionForm({
     await axios
       .post("http://localhost:5000/decisions", decision)
       .then((res) => {
-        setDataId(res.data);
         navigate(`/decision/${res.data}`);
       });
   };
@@ -61,33 +58,19 @@ function InputDecisionForm({
             }))
           }
         />
-        {redirectButton ? (
-          <Link
-            to={`/decision/${dataId}`}
-            className="font-bold text-sm rounded-full px-3 py-1 md:text-xl whitespace-nowrap bg-[#9B084F] text-white text-center"
-            onClick={async () => {
-              await postDecision();
-            }}
-          >
-            Créer la décision
-          </Link>
-        ) : (
-          <button
-            type="submit"
-            className="font-bold text-sm rounded-full px-3 py-1 md:text-xl whitespace-nowrap bg-[#9B084F] text-white"
-            onClick={async (e) => {
-              e.preventDefault();
-              setStep((old) => old + 1);
-            }}
-          >
-            Suivant
-          </button>
-        )}
+        <button
+          type="submit"
+          className="font-bold text-sm rounded-full px-3 py-1 md:text-xl whitespace-nowrap bg-[#9B084F] text-white"
+          onClick={
+            redirectButton ? postDecision : () => setStep((old) => old + 1)
+          }
+        >
+          Suivant
+        </button>
       </div>
     </div>
   );
 }
-
 InputDecisionForm.propTypes = {
   createDecision: PropTypes.shape({
     title: PropTypes.string,
@@ -103,8 +86,6 @@ InputDecisionForm.propTypes = {
   setStep: PropTypes.func.isRequired,
   stepName: PropTypes.string.isRequired,
   redirectButton: PropTypes.bool.isRequired,
-  setDataId: PropTypes.func.isRequired,
-  dataId: PropTypes.number.isRequired,
 };
 
 export default InputDecisionForm;
