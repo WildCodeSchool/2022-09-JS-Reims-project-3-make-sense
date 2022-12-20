@@ -1,4 +1,5 @@
 const argon2 = require("argon2");
+const jwt = require("jsonwebtoken");
 
 const hashPassword = (req, res, next) => {
   const hashOptions = {
@@ -20,6 +21,54 @@ const hashPassword = (req, res, next) => {
     });
 };
 
+const verifyPassword = (req, res) => {
+  argon2
+    .verify(req.user.hashed_password, req.body.password)
+    .then((match) => {
+      if (match) {
+        const payload = {
+          sub: req.user.id,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
+        delete req.user.hashed_password;
+        res.send({ user: req.user, token });
+      } else {
+        res.status(401).json({ message: "Invalid credentials" });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ message: "Internal server error" });
+    });
+};
+
+const verifyToken = (req, res, next) => {
+  try {
+    const authorizationHeader = req.get("Authorization");
+
+    if (authorizationHeader == null) {
+      throw new Error("Authorization header is missing");
+    }
+
+    const [type, token] = authorizationHeader.split(" ");
+
+    if (type !== "Bearer") {
+      throw new Error("Authorization header has not the 'Bearer' type");
+    }
+
+    req.payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    next();
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(401);
+  }
+};
+
 module.exports = {
   hashPassword,
+  verifyPassword,
+  verifyToken,
 };

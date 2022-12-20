@@ -1,15 +1,19 @@
 import { useState } from "react";
-import PropTypes from "prop-types";
 import rightchevron from "../assets/chevron-right.svg";
 import DescriptionDecisionForm from "../components/DescriptionDecisionForm";
 import InputDecisionForm from "../components/InputDecisionForm";
 
-function CreateDecision({
-  createDecision,
-  setCreateDecision,
-  dataId,
-  setDataId,
-}) {
+function CreateDecision() {
+  const [createDecision, setCreateDecision] = useState({
+    impacted: [],
+    experts: [],
+    title: "",
+    date: "",
+    description: "",
+    impacts: "",
+    advantages: "",
+    risks: "",
+  });
   const [inputImpacted, setInputImpacted] = useState("");
   const [inputExpert, setInputExpert] = useState("");
 
@@ -116,8 +120,6 @@ function CreateDecision({
               setStep={setStep}
               stepName="risks"
               redirectButton
-              dataId={dataId}
-              setDataId={setDataId}
             />
           )}
         </div>
@@ -125,21 +127,5 @@ function CreateDecision({
     </main>
   );
 }
-
-CreateDecision.propTypes = {
-  createDecision: PropTypes.shape({
-    title: PropTypes.string,
-    date: PropTypes.string,
-    description: PropTypes.string,
-    impacted: PropTypes.arrayOf(PropTypes.string),
-    experts: PropTypes.arrayOf(PropTypes.string),
-    impacts: PropTypes.string,
-    advantages: PropTypes.string,
-    risks: PropTypes.string,
-  }).isRequired,
-  setCreateDecision: PropTypes.func.isRequired,
-  dataId: PropTypes.string.isRequired,
-  setDataId: PropTypes.func.isRequired,
-};
 
 export default CreateDecision;

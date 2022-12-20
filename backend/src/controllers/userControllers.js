@@ -82,10 +82,30 @@ const destroy = (req, res) => {
     });
 };
 
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+  const { email } = req.body;
+
+  models.user
+    .findUserInfoByEmail(email)
+    .then(([rows]) => {
+      if (rows[0] == null) {
+        res.sendStatus(404);
+      } else {
+        [req.user] = rows;
+        next();
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+
 module.exports = {
   browse,
   read,
   edit,
   add,
   destroy,
+  getUserByEmailWithPasswordAndPassToNext,
 };

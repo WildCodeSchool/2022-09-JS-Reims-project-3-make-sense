@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import avatar from "../assets/profile_pic_default.svg";
+import { AuthContext } from "../_services/AuthContext";
 
 function DashboardCard({ decisionTitle, author, id }) {
+  const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const [decicionData, setDecisionData] = useState({});
-  // fectch data of the decision when the user click on the button "Voir
-  // la décision"
   const handleClick = async () => {
-    await fetch(`http://localhost:5000/decisions/${id}`)
+    await fetch(`http://localhost:5000/decisions/${id}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setDecisionData(data);

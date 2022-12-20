@@ -37,6 +37,22 @@ class DecisionManager extends AbstractManager {
       `select u.firstname, u.lastname, d.title, d.id from user u inner join ${this.table} d on d.user_id = u.id`
     );
   }
+
+  insertConcerned(users, decisionId) {
+    let sql = `insert into concerned (user_status, user_id, decision_id) values`;
+    const values = [];
+
+    for (let i = 0; i < users.length; i += 1) {
+      sql += "(?, ?, ?)";
+
+      if (i !== users.length - 1) {
+        sql += ",";
+      }
+
+      values.push(users[i].userStatus, users[i].userId, decisionId);
+    }
+    return this.connection.query(sql, values);
+  }
 }
 
 module.exports = DecisionManager;

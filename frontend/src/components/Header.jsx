@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import logo from "../assets/logo_makesense.png";
 import homeIcon from "../assets/home.svg";
@@ -9,9 +9,18 @@ import userIcon from "../assets/sampleprofile.png";
 import plusIcon from "../assets/plus.svg";
 import user from "../assets/user.svg";
 import logout from "../assets/log-out.svg";
+import { AuthContext } from "../_services/AuthContext";
 
 function Header() {
+  const { setAuth } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const handleLogout = () => {
+    setAuth((oldAuth) => ({
+      ...oldAuth,
+      isAuthenticated: false,
+      token: null,
+    }));
+  };
   return (
     <header className="w-full flex items-center justify-around border-solid border-b-2 h-16 bg-white">
       <img src={logo} alt="MakeSense" className="max-h-4 md:max-h-8 w-auto" />
@@ -81,8 +90,9 @@ function Header() {
                     </li>
                     <li className="p-2 hover:bg-gray-200 text-blue-dianne text-left text-sm font-bold">
                       <NavLink
-                        to="/logout"
+                        to="/login"
                         className="flex items-center gap-1 "
+                        onClick={handleLogout}
                       >
                         <img
                           src={logout}
