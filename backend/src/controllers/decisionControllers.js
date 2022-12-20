@@ -94,10 +94,28 @@ const destroy = (req, res) => {
     });
 };
 
+const addConcerned = (req, res) => {
+  const { users } = req.body;
+  const decisionId = req.params.id;
+
+  // TODO validations (length, format...)
+
+  models.decision
+    .insertConcerned(users, decisionId)
+    .then(([result]) => {
+      res.location(`/decisions/${result.insertId}`).sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+
 module.exports = {
   browse,
   read,
   edit,
   add,
   destroy,
+  addConcerned,
 };
