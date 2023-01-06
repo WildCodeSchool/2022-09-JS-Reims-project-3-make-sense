@@ -13,9 +13,7 @@ class UserManager extends AbstractManager {
   }
 
   findAll() {
-    return this.connection.query(
-      `select id, firstname, lastname, email, image_url from  ${this.table}`
-    );
+    return this.connection.query(`select * from ${this.table}`);
   }
 
   insert(user) {
@@ -33,15 +31,24 @@ class UserManager extends AbstractManager {
 
   update(user) {
     return this.connection.query(`update ${this.table} set ? where id = ?`, [
-      user.body,
+      user,
       user.id,
     ]);
   }
 
   findUserInfoByEmail(email) {
     return this.connection.query(
-      `select id, firstname, lastname, email, hashed_password from ${this.table} where email = ?`,
+      `select id, firstname, lastname, role, email, hashed_password from ${this.table} where email = ?`,
       [email]
+    );
+  }
+
+  findAllAndCountDecisions() {
+    return this.connection.query(
+      `SELECT u.id, u.firstname, u.lastname, u.email, u.role, COUNT(d.id) AS nb_decisions
+      FROM ${this.table} u
+      LEFT JOIN decision d ON u.id = d.user_id
+      GROUP BY u.id`
     );
   }
 }

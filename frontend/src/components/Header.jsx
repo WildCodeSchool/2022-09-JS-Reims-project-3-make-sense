@@ -9,10 +9,11 @@ import userIcon from "../assets/sampleprofile.png";
 import plusIcon from "../assets/plus.svg";
 import user from "../assets/user.svg";
 import logout from "../assets/log-out.svg";
+import adminLogo from "../assets/admin-panel.png";
 import { AuthContext } from "../_services/AuthContext";
 
 function Header() {
-  const { setAuth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const handleLogout = () => {
     setAuth((oldAuth) => ({
@@ -27,15 +28,30 @@ function Header() {
       <nav>
         <ul className="flex gap-4">
           <li>
-            <NavLink
-              to="/decisions/create"
-              className="group border rounded-full h-8 w-8 flex items-center justify-center relative"
-            >
-              <img src={plusIcon} alt="Plus" className="max-h-4 w-auto" />
-              <p className="hidden absolute top-full group-hover:block text-xs whitespace-nowrap mx-auto bg-slate-600 text-white px-2 rounded-md">
-                Créer une décision
-              </p>
-            </NavLink>
+            {auth.role === "admin" && (
+              <NavLink
+                to="admin"
+                className="group border rounded-full h-8 w-8 flex items-center justify-center relative"
+              >
+                <img src={adminLogo} alt="Plus" className="max-h-4 w-auto" />
+                <p className="hidden absolute top-full group-hover:block text-xs whitespace-nowrap mx-auto bg-slate-600 text-white px-2 rounded-md">
+                  Pannel Admin
+                </p>
+              </NavLink>
+            )}
+          </li>
+          <li>
+            {auth.role !== "visitor" && (
+              <NavLink
+                to="/decisions/create"
+                className="group border rounded-full h-8 w-8 flex items-center justify-center relative"
+              >
+                <img src={plusIcon} alt="Plus" className="max-h-4 w-auto" />
+                <p className="hidden absolute top-full group-hover:block text-xs whitespace-nowrap mx-auto bg-slate-600 text-white px-2 rounded-md">
+                  Créer une décision
+                </p>
+              </NavLink>
+            )}
           </li>
           <li className="flex flex-col hover:underline justify-center">
             <NavLink

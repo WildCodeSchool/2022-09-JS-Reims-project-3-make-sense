@@ -19,4 +19,4 @@ Content-type: application/json
 
 ###
 GET http://localhost:5000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTY3MjgzNzAwOSwiZXhwIjoxNjcyODQwNjA5fQ.RCziwBPzV54HcoiTglyeTZ3ijXLhEj6_qnNZakGQIbE
+Authorization: Bearer <token>

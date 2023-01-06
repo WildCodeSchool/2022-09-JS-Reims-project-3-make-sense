@@ -17,12 +17,14 @@ function Login() {
         password: passwordRef.current.value,
       })
       .then((res) => {
-        const { token } = res.data;
+        const { token, id, role } = res.data;
         if (token) {
           setAuth((oldAuth) => ({
             ...oldAuth,
             isAuthenticated: true,
             token,
+            id,
+            role,
           }));
           navigate("/");
         } else {

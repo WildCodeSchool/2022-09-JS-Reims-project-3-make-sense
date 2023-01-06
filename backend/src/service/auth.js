@@ -32,8 +32,10 @@ const verifyPassword = (req, res) => {
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: "1h",
         });
+        const { id, role } = req.user;
+
         delete req.user.hashed_password;
-        res.send({ user: req.user, token });
+        res.send({ id, role, token });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
       }

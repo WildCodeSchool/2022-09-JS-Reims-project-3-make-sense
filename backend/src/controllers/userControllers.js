@@ -54,6 +54,21 @@ const read = (req, res) => {
     });
 };
 
+const browseAndCountDecisions = (req, res) => {
+  models.user
+    .findAllAndCountDecisions()
+    .then(([rows]) => {
+      if (rows[0] == null) {
+        res.sendStatus(404);
+      }
+      res.send(rows);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+};
+
 const edit = (req, res) => {
   const user = req.body;
 
@@ -134,6 +149,7 @@ module.exports = {
   add,
   destroy,
   getUserByEmailWithPasswordAndPassToNext,
+  browseAndCountDecisions,
   uploadFile,
   handleFile,
 };
