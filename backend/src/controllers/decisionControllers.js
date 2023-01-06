@@ -65,7 +65,6 @@ const add = (req, res, next) => {
     .insert(decision)
     .then(([result]) => {
       req.body.decisionId = result.insertId;
-      res.status(201).json(result.insertId);
       next();
     })
     .catch((err) => {
@@ -95,7 +94,7 @@ const addConcerned = (req, res) => {
   models.decision
     .insertConcerned(users, decisionId)
     .then(() => {
-      res.sendStatus(201);
+      res.status(201).json(decisionId);
     })
     .catch((err) => {
       console.error(err);
