@@ -20,27 +20,9 @@ export default function Decision() {
   const [middleDecisionIsCreated, setMiddleDecisionIsCreated] = useState(false);
   const [finalDecisionForm, setFinalDecisionForm] = useState(false);
   const [finalDecisionIsCreated, setFinalDecisionIsCreated] = useState(false);
-  const [content, setContent] = useState({
-    title: "",
-    publish_date: "",
-    deadline: "",
-    start_content: "",
-    middle_decision: "",
-    final_decision: "",
-    impact: "",
-    risk: "",
-    advantage: "",
-    userId: "",
-    statusId: "",
-    concerned: [],
-    comment: [],
-    firstname: "",
-    lastname: "",
-    user_id: "",
-    image_url: "",
-  });
+  const [content, setContent] = useState(null);
   const { statusStep, statusDuration, durationPercentage, publishDate } =
-    getDate(content.publish_date, content.deadline);
+    getDate(content?.publish_date, content?.deadline);
   // this function will toggle or not the middle decision form when activated. (Used on "create new decision" button)
   function toggleMiddleDecisionForm() {
     setMiddleDecisionForm(!middleDecisionForm);
@@ -89,6 +71,14 @@ export default function Decision() {
     };
     getData();
   }, [id, commentAdded]);
+  if (!content) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-2xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col md:flex-row md:w-2/3 mx-auto w-full">
       <main className="flex flex-col md:my-16 w-full md:w-2/3 border-r-2 pl-2 md:pl:0 my-8">

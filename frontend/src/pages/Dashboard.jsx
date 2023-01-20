@@ -33,6 +33,7 @@ function Dashboard() {
               <DashboardCard
                 key={decision.id}
                 id={decision.id}
+                profilePicture={decision.image_url}
                 decisionTitle={decision.title}
                 author={`${decision.firstname} ${decision.lastname}`}
               />
@@ -50,6 +51,7 @@ function Dashboard() {
               <DashboardCard
                 key={decision.id}
                 id={decision.id}
+                profilePicture={decision.image_url}
                 decisionTitle={decision.title}
                 author={`${decision.firstname} ${decision.lastname}`}
               />
