@@ -23,7 +23,7 @@ function InputDecisionForm({
       impact: createDecision.impacts,
       risk: createDecision.risks,
       advantage: createDecision.advantages,
-      userId: 1,
+      userId: auth.id,
       users: usersConcerned,
     };
     axios

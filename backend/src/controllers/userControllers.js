@@ -71,6 +71,10 @@ const browseAndCountDecisions = (req, res) => {
 
 const edit = (req, res) => {
   const user = req.body;
+  if (user.hashedPassword) {
+    user.hashed_password = user.hashedPassword;
+    delete user.hashedPassword;
+  }
   // TODO validations (length, format...)
 
   user.id = parseInt(req.params.id, 10);

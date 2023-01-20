@@ -105,7 +105,7 @@ create table comment (
   user_id int(11) unsigned NOT NULL,
   decision_id int(11) unsigned NOT NULL,
   date datetime NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-  constraint comment_user foreign key (user_id) references user(id),
+  constraint comment_user foreign key (user_id) references user(id) on delete cascade,
   constraint decision_comment foreign key (decision_id) references decision(id)
 ) engine=InnoDB default charset=latin1;
 
