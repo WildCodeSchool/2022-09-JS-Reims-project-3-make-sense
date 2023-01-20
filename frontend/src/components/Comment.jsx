@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
+import dateDisplay from "../_services/dateDisplay";
 
 function Comment({ icon, content, author, date }) {
-  console.warn(date);
   return (
     <div className="flex flex-col gap-3 bg-red-50 rounded-lg border-2 md:w-11/12 border-r-2 my-4 mx-4 md:mx-0">
       <div className="flex items-center gap-2 p-2">
@@ -12,7 +12,7 @@ function Comment({ icon, content, author, date }) {
         />
         <div className="flex flex-col">
           <h3 className="text-sm font-bold">{author}</h3>
-          <p className="text-sm">Il y a x jours</p>
+          <p className="text-sm">Il y a {dateDisplay(date)}</p>
         </div>
       </div>
       <div
