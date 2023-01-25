@@ -60,13 +60,12 @@ function Register() {
       formData.append("email", emailRef.current.value);
       formData.append("password", passwordRef.current.value);
 
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      };
       await axios
-        .post("http://localhost:5000/users", formData, config)
+        .post("http://localhost:5000/users", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(() => {
           navigate("/login");
         })

@@ -33,8 +33,9 @@ function Dashboard() {
               <DashboardCard
                 key={decision.id}
                 id={decision.id}
+                imageURI={decision.user.image_url}
                 decisionTitle={decision.title}
-                author={`${decision.firstname} ${decision.lastname}`}
+                author={`${decision.user.firstname} ${decision.user.lastname}`}
               />
             ))}
         </div>
@@ -50,8 +51,9 @@ function Dashboard() {
               <DashboardCard
                 key={decision.id}
                 id={decision.id}
+                imageURI={decision.user.image_url}
                 decisionTitle={decision.title}
-                author={`${decision.firstname} ${decision.lastname}`}
+                author={`${decision.user.firstname} ${decision.user.lastname}`}
               />
             ))}
         </div>

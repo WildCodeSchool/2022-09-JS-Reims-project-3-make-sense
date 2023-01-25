@@ -19,6 +19,9 @@ app.use(express.json());
 // Serve the public folder for public resources
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Serve the uploads folder for uploaded resources
+app.use(express.static(path.join(__dirname, "../uploads")));
+
 // Serve REACT APP
 app.use(express.static(path.join(__dirname, "..", "..", "frontend", "dist")));
 

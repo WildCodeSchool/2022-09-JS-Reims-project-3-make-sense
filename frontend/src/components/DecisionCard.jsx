@@ -1,10 +1,9 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import avatar from "../assets/profile_pic_default.svg";
 import { AuthContext } from "../_services/AuthContext";
 
-function DashboardCard({ decisionTitle, author, id }) {
+function DashboardCard({ decisionTitle, author, id, imageURI }) {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const handleClick = async () => {
@@ -25,7 +24,7 @@ function DashboardCard({ decisionTitle, author, id }) {
       <div className="flex flex-col">
         <figure className="flex justify-between mt-4 items-center gap-2">
           <img
-            src={avatar}
+            src={imageURI}
             alt="avatar"
             className="max-h-12 w-auto rounded-full"
           />
@@ -49,6 +48,7 @@ DashboardCard.propTypes = {
   decisionTitle: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
+  imageURI: PropTypes.string.isRequired,
 };
 
 export default DashboardCard;

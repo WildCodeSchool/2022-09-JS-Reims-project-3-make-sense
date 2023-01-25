@@ -7,7 +7,13 @@ const userControllers = require("./controllers/userControllers");
 const commentControllers = require("./controllers/commentControllers");
 const { hashPassword, verifyToken } = require("./service/auth");
 
-router.post("/users", hashPassword, userControllers.add);
+router.post(
+  "/users",
+  userControllers.uploadFile,
+  userControllers.handleFile,
+  hashPassword,
+  userControllers.add
+);
 
 router.post("/users/login", userControllers.login);
 

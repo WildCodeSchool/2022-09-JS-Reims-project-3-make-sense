@@ -13,6 +13,7 @@ const browse = async (req, res) => {
     include: {
       concerned: true,
       comment: true,
+      user: true,
     },
   };
   if (userRole === "visitor") {
@@ -49,17 +50,25 @@ const read = async (req, res) => {
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   const userRole = decodedToken.role;
   const userId = decodedToken.id;
-  if (userRole === "visitor") {
-    const decision = await prisma.decision.findUnique({
-      where: {
-        id: parseInt(decisionId, 10),
+  const decision = await prisma.decision.findUnique({
+    where: {
+      id: parseInt(decisionId, 10),
+    },
+    include: {
+      concerned: {
+        include: {
+          user: true,
+        },
       },
-      include: {
-        concerned: true,
-        comment: true,
+      comment: {
+        include: {
+          user: true,
+        },
       },
-    });
-    if (decision) {
+    },
+  });
+  if (decision) {
+    if (userRole === "visitor") {
       const { concerned } = decision;
       const concernedIds = concerned.map((concernedUser) => {
         return concernedUser.user_id;
@@ -71,24 +80,11 @@ const read = async (req, res) => {
         res.status(403).json({ message: "Forbidden" });
       }
     } else {
-      res.status(404).json({ message: "Decision not found" });
-    }
-  } else {
-    const decision = await prisma.decision.findUnique({
-      where: {
-        id: parseInt(decisionId, 10),
-      },
-      include: {
-        concerned: true,
-        comment: true,
-      },
-    });
-    if (decision) {
       const newDecision = setDecisionsStatus([decision]);
       res.status(200).json(newDecision[0]);
-    } else {
-      res.status(404).json({ message: "Decision not found" });
     }
+  } else {
+    res.status(404).json({ message: "Decision not found" });
   }
 };
 
@@ -113,7 +109,6 @@ const add = async (req, res) => {
     },
   });
   if (decisionAndItsConcerned) {
-    delete decisionAndItsConcerned.user.hashed_password;
     res.json({
       message: "Decision created",
       decision: decisionAndItsConcerned,
