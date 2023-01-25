@@ -1,151 +1,155 @@
 const jwt = require("jsonwebtoken");
-const models = require("../models");
+const { PrismaClient } = require("@prisma/client");
+const { setDecisionsStatus } = require("../service/utils");
 
-const browse = (req, res) => {
+const prisma = new PrismaClient();
+
+const browse = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   const userRole = decodedToken.role;
   const userId = decodedToken.id;
-  if (userRole !== "visitor") {
-    models.decision
-      .findAllDecisions()
-      .then(([rows]) => {
-        res.send(rows);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
-  } else if (userRole === "visitor") {
-    models.decision
-      .findOnlyDecisionsIfConcernedByIt(userId)
-      .then(([rows]) => {
-        res.send(rows);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.sendStatus(500);
-      });
+  const initialConditions = {
+    include: {
+      concerned: true,
+      comment: true,
+    },
+  };
+  if (userRole === "visitor") {
+    const decisions = await prisma.decision.findMany({
+      where: {
+        concerned: {
+          some: {
+            user_id: userId,
+          },
+        },
+      },
+      ...initialConditions,
+    });
+    if (decisions) {
+      const newDecisions = setDecisionsStatus(decisions);
+      res.status(200).json(newDecisions);
+    } else {
+      res.status(404).json({ message: "Decisions not found" });
+    }
+  } else {
+    const decisions = await prisma.decision.findMany(initialConditions);
+    if (decisions) {
+      const newDecisions = setDecisionsStatus(decisions);
+      res.status(200).json(newDecisions);
+    } else {
+      res.status(404).json({ message: "Decisions not found" });
+    }
   }
 };
 
-const read = (req, res) => {
-  models.decision
-    .find(req.params.id)
-    .then(([rows]) => {
-      if (rows[0] == null) {
-        res.sendStatus(404);
+const read = async (req, res) => {
+  const decisionId = req.params.id;
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const userRole = decodedToken.role;
+  const userId = decodedToken.id;
+  if (userRole === "visitor") {
+    const decision = await prisma.decision.findUnique({
+      where: {
+        id: parseInt(decisionId, 10),
+      },
+      include: {
+        concerned: true,
+        comment: true,
+      },
+    });
+    if (decision) {
+      const { concerned } = decision;
+      const concernedIds = concerned.map((concernedUser) => {
+        return concernedUser.user_id;
+      });
+      if (concernedIds.includes(userId)) {
+        const newDecision = setDecisionsStatus([decision]);
+        res.status(200).json(newDecision[0]);
       } else {
-        const decision = rows[0];
-        decision.concerned = req.concerned;
-        decision.comment = req.comment;
-        res.send(decision);
+        res.status(403).json({ message: "Forbidden" });
       }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+    } else {
+      res.status(404).json({ message: "Decision not found" });
+    }
+  } else {
+    const decision = await prisma.decision.findUnique({
+      where: {
+        id: parseInt(decisionId, 10),
+      },
+      include: {
+        concerned: true,
+        comment: true,
+      },
     });
+    if (decision) {
+      const newDecision = setDecisionsStatus([decision]);
+      res.status(200).json(newDecision[0]);
+    } else {
+      res.status(404).json({ message: "Decision not found" });
+    }
+  }
 };
 
-const edit = (req, res) => {
-  const decision = req.body;
-  decision.id = parseInt(req.params.id, 10);
-
-  models.decision
-    .update(decision)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
+const add = async (req, res) => {
+  const decisionAndItsConcerned = await prisma.decision.create({
+    data: {
+      title: req.body.title,
+      deadline: req.body.deadline,
+      start_content: req.body.start_content,
+      impact: req.body.impact,
+      risk: req.body.risk,
+      advantage: req.body.advantage,
+      user_id: req.body.user_id,
+      concerned: {
+        create: req.body.concerned.map((OneOfConcerned) => {
+          return {
+            user_id: OneOfConcerned.user_id,
+            user_status: OneOfConcerned.user_status,
+          };
+        }),
+      },
+    },
+  });
+  if (decisionAndItsConcerned) {
+    delete decisionAndItsConcerned.user.hashed_password;
+    res.json({
+      message: "Decision created",
+      decision: decisionAndItsConcerned,
     });
+  } else {
+    res.status(404).json({ message: "Decision not created" });
+  }
 };
 
-const add = (req, res, next) => {
-  const decision = req.body;
-  models.decision
-    .insert(decision)
-    .then(([result]) => {
-      req.body.decisionId = result.insertId;
-      next();
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const edit = async (req, res) => {
+  const decisionId = req.params.id;
+  const dataToUpdate = req.body;
+  const decision = await prisma.decision.update({
+    where: {
+      id: parseInt(decisionId, 10),
+    },
+    data: dataToUpdate,
+  });
+  if (decision) {
+    res.status(200).json(decision);
+  } else {
+    res.status(404).json({ message: "Decision not found" });
+  }
 };
 
-const destroy = (req, res) => {
-  models.decision
-    .delete(req.params.id)
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.sendStatus(404);
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const addConcerned = (req, res) => {
-  const { users, decisionId } = req.body;
-  models.decision
-    .insertConcerned(users, decisionId)
-    .then(() => {
-      res.status(201).json(decisionId);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-const getComments = (req, res, next) => {
-  models.comment
-    .findCommentsByDecisionId(req.params.id)
-    .then(([rows]) => {
-      req.comment = rows;
-      next();
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const getConcernedByDecisionId = (req, res, next) => {
-  models.decision
-    .findConcernedsByDecisionId(req.params.id)
-    .then(([rows]) => {
-      req.concerned = rows;
-      next();
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
-};
-
-const addCommentToDecision = (req, res) => {
-  const comment = req.body;
-  models.comment
-    .insert(comment)
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.sendStatus(500);
-    });
+const destroy = async (req, res) => {
+  const decision = await prisma.decision.delete({
+    where: {
+      id: parseInt(req.params.id, 10),
+    },
+  });
+  if (decision) {
+    res.status(204).json({ message: "Decision deleted" });
+  } else {
+    res.status(404).json({ message: "Decision not deleted" });
+  }
 };
 
 module.exports = {
@@ -154,8 +158,4 @@ module.exports = {
   edit,
   add,
   destroy,
-  addConcerned,
-  getConcernedByDecisionId,
-  getComments,
-  addCommentToDecision,
 };

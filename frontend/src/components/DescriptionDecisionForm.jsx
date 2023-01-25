@@ -58,7 +58,6 @@ function DescriptionDecisionForm({
                   {
                     user_status: "impacted",
                     user_id: +inputImpacted.replace(/[^0-9]/g, ""),
-                    decision_id: 1,
                   },
                 ]);
                 setInputImpacted("");

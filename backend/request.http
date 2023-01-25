@@ -1,8 +1,27 @@
+# User API
 POST http://localhost:5000/users/login
 Content-type: application/json
 
 {
   "email": "visitor@mail.com",
+  "password" : "password123"
+}
+
+###
+POST http://localhost:5000/users/login
+Content-type: application/json
+
+{
+  "email": "employee@mail.com",
+  "password" : "password123"
+}
+
+###
+POST http://localhost:5000/users/login
+Content-type: application/json
+
+{
+  "email": "admin@mail.com",
   "password" : "password123"
 }
 
@@ -19,7 +38,58 @@ Content-type: application/json
 
 ###
 GET http://localhost:5000/users
-Authorization: Bearer <token>
 
 ###
-GET http://localhost:5000/decisions/1
+GET http://localhost:5000/users/1
+
+###
+GET http://localhost:5000/users/1/statistics
+
+###
+POST http://localhost:5000/users
+Content-type: application/json
+
+{
+  "firstname": "Jessy",
+  "lastname": "haz",
+  "email": "Jessy@mail.com",
+  "password": "password123"
+}
+
+###
+PUT http://localhost:5000/users/4
+Content-type: application/json
+
+{
+  "firstname": "Mike",
+  "lastname": "Mekoui",
+  "email": "mouns@gmail.com",
+  "password": "password123"
+}
+
+###
+PUT http://localhost:5000/users/4
+Content-Type: application/json
+
+{
+  "role": "admin"
+}
+
+# Decision API
+###
+GET http://localhost:5000/decisions
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJ2aXNpdG9yIiwiaWQiOjEsImlhdCI6MTY3NDY1NDYwMiwiZXhwIjoxNjc0NjU4MjAyfQ.GXfbk04BiWr4U_u3QDZuESajOYSLPz1L6lEYGDz0hTw
+###
+GET http://localhost:5000/decisions/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInJvbGUiOiJhZG1pbiIsImlkIjozLCJpYXQiOjE2NzQ2NTUyNjcsImV4cCI6MTY3NDY1ODg2N30.iGKRPOBqw9k8r1MgFabzOLywlWcGSL4o_Kw25I8xIMs
+###
+DELETE http://localhost:5000/decisions/7
+
+###
+PUT http://localhost:5000/decisions/4
+Content-Type: application/json
+
+{
+  "middle_decision" : "I am the middle decision"
+}
+

@@ -23,8 +23,8 @@ function InputDecisionForm({
       impact: createDecision.impacts,
       risk: createDecision.risks,
       advantage: createDecision.advantages,
-      userId: 1,
-      users: usersConcerned,
+      user_id: 1,
+      concerned: usersConcerned,
     };
     axios
       .post("http://localhost:5000/decisions", decision, {

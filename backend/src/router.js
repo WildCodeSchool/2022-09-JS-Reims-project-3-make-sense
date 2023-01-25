@@ -4,50 +4,36 @@ const router = express.Router();
 
 const decisionControllers = require("./controllers/decisionControllers");
 const userControllers = require("./controllers/userControllers");
-const { hashPassword, verifyPassword, verifyToken } = require("./service/auth");
+const commentControllers = require("./controllers/commentControllers");
+const { hashPassword, verifyToken } = require("./service/auth");
 
-router.post(
-  "/users/login",
-  userControllers.getUserByEmailWithPasswordAndPassToNext,
-  verifyPassword
-);
-router.post(
-  "/users",
-  userControllers.uploadFile,
-  userControllers.handleFile,
-  hashPassword,
-  userControllers.add
-);
+router.post("/users", hashPassword, userControllers.add);
+
+router.post("/users/login", userControllers.login);
 
 router.use(verifyToken);
 
-router.get("/decisions", decisionControllers.browse);
-router.get(
-  "/decisions/:id",
-  decisionControllers.getConcernedByDecisionId,
-  decisionControllers.getComments,
-  decisionControllers.read
-);
-router.put("/decisions/:id", decisionControllers.edit);
-router.post(
-  "/decisions",
-  decisionControllers.add,
-  decisionControllers.addConcerned
-);
-router.post("/decisions/:id/users", decisionControllers.addConcerned);
-router.delete("/decisions/:id", decisionControllers.destroy);
+// routes concernings users
 
-// route concernings users
-router.get("/users/decisions", userControllers.browseAndCountDecisions);
 router.get("/users", userControllers.browse);
 router.get("/users/:id", userControllers.read);
 router.put("/users/:id", hashPassword, userControllers.edit);
 router.delete("/users/:id", userControllers.destroy);
 
-router.get("/decisions/:decisionId/comments", decisionControllers.getComments);
-router.post(
-  "/decisions/:decisionId/comments",
-  decisionControllers.addCommentToDecision
-);
+// routes users statistics (number of decisions, number of comments, number of concerned) for the admin dashboard
+
+router.get("/users/:id/statistics", userControllers.browseAndGetStats);
+
+// routes concernings decisions
+
+router.get("/decisions", decisionControllers.browse);
+router.get("/decisions/:id", decisionControllers.read);
+router.post("/decisions", decisionControllers.add);
+router.put("/decisions/:id", decisionControllers.edit);
+router.delete("/decisions/:id", decisionControllers.destroy);
+
+// routes concernings comments
+
+router.post("/decisions/:decisionId/comments", commentControllers.add);
 
 module.exports = router;
