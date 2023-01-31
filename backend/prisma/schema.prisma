@@ -35,7 +35,7 @@ model concerned {
 model decision {
   id              Int             @id @default(autoincrement()) @db.UnsignedInt
   title           String          @db.VarChar(150)
-  deadline        String          @db.VarChar(50)
+  deadline        DateTime        @db.DateTime(0)
   publish_date    DateTime        @default(dbgenerated("(curdate())")) @db.Date
   start_content   String          @db.Text
   impact          String          @db.Text

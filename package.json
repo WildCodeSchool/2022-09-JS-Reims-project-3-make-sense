@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "setup": "npm i && husky install && npm --prefix ./frontend i && npm --prefix ./backend i",
-    "migrate": "cd backend/ && npx prisma migrate dev --name init && cd ..",
+    "migrate": "cd backend/ && npx prisma db push --force-reset && npx prisma db seed && cd ..",
     "dev": "concurrently -n front,back -c green,yellow -t \"HH:mm:ss\" -p \"{name} {time}\" \"npm --prefix ./frontend run dev\" \"npm --prefix ./backend run dev\"",
     "dev-front": "npm --prefix ./frontend run dev",
     "dev-back": "npm --prefix ./backend run dev",
