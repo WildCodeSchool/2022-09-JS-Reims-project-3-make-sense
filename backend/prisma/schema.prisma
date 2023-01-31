@@ -44,7 +44,8 @@ model decision {
   middle_decision String?         @db.Text
   final_decision  String?         @db.Text
   user_id         Int             @db.UnsignedInt
-  status          decision_status @default(in_progress)
+  status          decision_status @default(inProgress_decisionStarted)
+  progress        Float           @default(0)
   comment         comment[]
   concerned       concerned[]
   user            user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "decision_user")
@@ -71,6 +72,9 @@ enum concerned_user_status {
 }
 
 enum decision_status {
-  in_progress
+  inProgress_decisionStarted
+  inProgress_decisionTaken
+  inProgress_decisionConflicted
+  inProgress_decisionUnsuccessful
   finished
 }

@@ -9,82 +9,107 @@ const browse = async (req, res) => {
   const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   const userRole = decodedToken.role;
   const userId = decodedToken.id;
-  const initialConditions = {
-    include: {
-      concerned: true,
-      comment: true,
-      user: true,
-    },
-  };
-  if (userRole === "visitor") {
-    const decisions = await prisma.decision.findMany({
-      where: {
-        concerned: {
-          some: {
-            user_id: userId,
-          },
-        },
-      },
-      ...initialConditions,
-    });
-    if (decisions) {
-      const newDecisions = setDecisionsStatus(decisions);
-      res.status(200).json(newDecisions);
-    } else {
-      res.status(404).json({ message: "Decisions not found" });
-    }
-  } else {
-    const decisions = await prisma.decision.findMany(initialConditions);
-    if (decisions) {
-      const newDecisions = setDecisionsStatus(decisions);
-      res.status(200).json(newDecisions);
-    } else {
-      res.status(404).json({ message: "Decisions not found" });
-    }
-  }
-};
 
-const read = async (req, res) => {
-  const decisionId = req.params.id;
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  const userRole = decodedToken.role;
-  const userId = decodedToken.id;
-  const decision = await prisma.decision.findUnique({
-    where: {
-      id: parseInt(decisionId, 10),
-    },
+  const decisions = await prisma.decision.findMany({
     include: {
+      user: true,
       concerned: {
-        include: {
-          user: true,
-        },
-      },
-      comment: {
         include: {
           user: true,
         },
       },
     },
   });
-  if (decision) {
-    if (userRole === "visitor") {
-      const { concerned } = decision;
-      const concernedIds = concerned.map((concernedUser) => {
-        return concernedUser.user_id;
-      });
-      if (concernedIds.includes(userId)) {
-        const newDecision = setDecisionsStatus([decision]);
-        res.status(200).json(newDecision[0]);
-      } else {
-        res.status(403).json({ message: "Forbidden" });
-      }
+
+  const newDecisions = decisions.map((decision) => {
+    const { user, concerned, ...decisionWithoutUser } = decision;
+    return {
+      ...decisionWithoutUser,
+      author: `${user.firstname} ${user.lastname}`,
+      author_image: user.image_url,
+      concerned: concerned.map((concernedUser) => concernedUser.user.id),
+    };
+  });
+
+  const newDecisionStatus = setDecisionsStatus(newDecisions);
+
+  if (userRole === "visitor") {
+    const filteredDecisions = newDecisionStatus.filter((decision) =>
+      decision.concerned.includes(userId)
+    );
+    res.status(200).json(filteredDecisions);
+  } else {
+    res.status(200).json(newDecisionStatus);
+  }
+};
+
+const read = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const userRole = decodedToken.role;
+  const userId = decodedToken.id;
+
+  // GET decision with all its comments sorted by date and all its concerned users with their info
+  const decision = await prisma.decision.findUnique({
+    where: {
+      id: parseInt(req.params.id, 10),
+    },
+    include: {
+      user: true,
+      concerned: {
+        include: {
+          user: true,
+        },
+      },
+      comment: {
+        orderBy: {
+          date: "desc",
+        },
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  // Format decision
+  const { user, concerned, ...decisionWithoutUser } = decision;
+  const newDecision = {
+    ...decisionWithoutUser,
+    author: `${user.firstname} ${user.lastname}`,
+    author_image: user.image_url,
+    concerned: concerned.map((concernedUser) => {
+      return {
+        id: concernedUser.user.id,
+        firstname: concernedUser.user.firstname,
+        lastname: concernedUser.user.lastname,
+        image_url: concernedUser.user.image_url,
+      };
+    }),
+    comments: decision.comment.map((OneOfComment) => {
+      return {
+        id: OneOfComment.id,
+        content: OneOfComment.content,
+        author: `${OneOfComment.user.firstname} ${OneOfComment.user.lastname}`,
+        author_image: OneOfComment.user.image_url,
+        created_at: OneOfComment.date,
+      };
+    }),
+  };
+  delete newDecision.comment;
+
+  // Set decision status
+  const newDecisionStatus = setDecisionsStatus([newDecision]);
+
+  // Send response to client depending on user role and concerned users
+  if (userRole === "visitor") {
+    if (newDecisionStatus[0].concerned.includes(userId)) {
+      res.status(200).json(newDecisionStatus[0]);
     } else {
-      const newDecision = setDecisionsStatus([decision]);
-      res.status(200).json(newDecision[0]);
+      res.status(403).json({ message: "Forbidden" });
     }
   } else {
-    res.status(404).json({ message: "Decision not found" });
+    res.status(200).json(newDecisionStatus[0]);
   }
 };
 

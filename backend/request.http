@@ -43,7 +43,9 @@ GET http://localhost:5000/users
 GET http://localhost:5000/users/1
 
 ###
-GET http://localhost:5000/users/1/statistics
+GET http://localhost:5000/users/3/statistics
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInJvbGUiOiJhZG1pbiIsImlkIjozLCJpYXQiOjE2NzUxODg3NTEsImV4cCI6MTY3NTE5MjM1MX0.lCzZgvSCvyQm8IY0lS0r-22Q6G1m9DwlMWlQwcx4ge0
+
 
 ###
 POST http://localhost:5000/users
@@ -78,10 +80,10 @@ Content-Type: application/json
 # Decision API
 ###
 GET http://localhost:5000/decisions
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJ2aXNpdG9yIiwiaWQiOjEsImlhdCI6MTY3NDY1NDYwMiwiZXhwIjoxNjc0NjU4MjAyfQ.GXfbk04BiWr4U_u3QDZuESajOYSLPz1L6lEYGDz0hTw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJ2aXNpdG9yIiwiaWQiOjEsImlhdCI6MTY3NTE3NzI1NiwiZXhwIjoxNjc1MTgwODU2fQ._6LcYw2DbZDGmACBXFWY0XpnVBKVanE8FwfZ1KrvSDM
 ###
-GET http://localhost:5000/decisions/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInJvbGUiOiJhZG1pbiIsImlkIjozLCJpYXQiOjE2NzQ2NTUyNjcsImV4cCI6MTY3NDY1ODg2N30.iGKRPOBqw9k8r1MgFabzOLywlWcGSL4o_Kw25I8xIMs
+GET http://localhost:5000/decisions/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInJvbGUiOiJhZG1pbiIsImlkIjozLCJpYXQiOjE2NzUxODg3NTEsImV4cCI6MTY3NTE5MjM1MX0.lCzZgvSCvyQm8IY0lS0r-22Q6G1m9DwlMWlQwcx4ge0
 ###
 DELETE http://localhost:5000/decisions/7
 
