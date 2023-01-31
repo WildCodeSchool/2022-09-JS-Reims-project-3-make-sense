@@ -46,6 +46,7 @@ model decision {
   user_id         Int             @db.UnsignedInt
   status          decision_status @default(inProgress_decisionStarted)
   progress        Float           @default(0)
+  number_of_consultation Int      @default(0)
   comment         comment[]
   concerned       concerned[]
   user            user            @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "decision_user")
@@ -75,6 +76,7 @@ enum decision_status {
   inProgress_decisionStarted
   inProgress_decisionTaken
   inProgress_decisionConflicted
+  inProgress_decisionFinal
   inProgress_decisionUnsuccessful
   finished
 }

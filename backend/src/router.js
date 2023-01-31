@@ -31,9 +31,9 @@ router.delete("/users/:id", userControllers.destroy);
 router.get("/users/:id/statistics", userControllers.browseAndGetStats);
 
 // routes concernings decisions
-
-router.get("/decisions", decisionControllers.browse);
 router.get("/decisions/:id", decisionControllers.read);
+router.get("/decisions", decisionControllers.browse);
+router.get("/decisions/statistics", decisionControllers.browseAndGetStats);
 router.post("/decisions", decisionControllers.add);
 router.put("/decisions/:id", decisionControllers.edit);
 router.delete("/decisions/:id", decisionControllers.destroy);
